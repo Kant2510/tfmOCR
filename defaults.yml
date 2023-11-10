@@ -21,7 +21,7 @@ cnn:
 vocab: " '/123456789ABCDEFGHIJKLMNOPQRSTUVWXYabcdefghiklmnopqrstuvxyzÁÂÍÓÔÝàáâãèéêìíòóôõùúýăĐđĩũơƯưạẢảẤấầẩẫậắằẳẵặẹẻẽếềểễệỉịọỏốồỔổỗộớờỞởỡợụủỨứừửữựỳỵỷỹ"
 
 # cpu, cuda, cuda:0
-device: cuda:0
+device: cpu #cuda:0
 
 seq_modeling: transformer
 transformer:
@@ -30,7 +30,7 @@ transformer:
     num_encoder_layers: 6
     num_decoder_layers: 6
     dim_feedforward: 2048
-    max_seq_length: 68
+    max_seq_length: 1024
     pos_dropout: 0.1
     trans_dropout: 0.1
 
@@ -41,12 +41,12 @@ optimizer:
 trainer:
     batch_size: 32
     print_every: 2
-    valid_every: 4000
-    iters: 10
+    valid_every: 4
+    iters: 100
     # where to save our model for prediction
     export: weights/transformerocr.pth
     checkpoint: #./checkpoint/transformerocr_checkpoint.pth
-    log: train.log
+    log: ./train.log
     # null to disable compuate accuracy, or change to number of sample to enable validiation while training
     metrics: null
 
@@ -54,13 +54,13 @@ dataset:
     # name of your dataset
     name: data
     # path to annotation and image
-    data_root: datasets/enhanced_dataset/images/
-    train_annotation: datasets/enhanced_dataset/train.txt
-    valid_annotation: datasets/enhanced_dataset/val.txt
+    data_root: ../../datasets/enhanced_dataset
+    train_annotation: train.txt
+    valid_annotation: val.txt
     # resize image to 32 height, larger height will increase accuracy
-    image_height: 96
-    image_min_width: 96
-    image_max_width: 1800
+    image_height: 32
+    image_min_width: 32
+    image_max_width: 512
 
 dataloader:
     num_workers: 3

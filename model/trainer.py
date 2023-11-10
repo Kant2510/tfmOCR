@@ -21,7 +21,7 @@ import matplotlib.pyplot as plt
 import time
 
 class Trainer():
-    def __init__(self, config, pretrained=True, augmentor=ImgAugTransform()):
+    def __init__(self, config, pretrained=False, augmentor=ImgAugTransform()):
 
         self.config = config
         self.model, self.vocab = build_model(config)
