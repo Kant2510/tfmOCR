@@ -1,19 +1,19 @@
-from optim.optim import ScheduledOptim
-from optim.labelsmoothingloss import LabelSmoothingLoss
+from tfmOCR.optim.optim import ScheduledOptim
+from tfmOCR.optim.labelsmoothingloss import LabelSmoothingLoss
 from torch.optim import Adam, AdamW
-from tool.translate import build_model
-from tool.translate import translate, batch_translate_beam_search
-from tool.utils import download_weights
-from tool.logger import Logger
-from loader.aug import ImgAugTransform
+from tfmOCR.tool.translate import build_model
+from tfmOCR.tool.translate import translate, batch_translate_beam_search
+from tfmOCR.tool.utils import download_weights
+from tfmOCR.tool.logger import Logger
+from tfmOCR.loader.aug import ImgAugTransform
 
 import torch
-from loader.dataloader_v1 import DataGen
-from loader.dataloader import OCRDataset, ClusterRandomSampler, Collator
+from tfmOCR.loader.dataloader_v1 import DataGen
+from tfmOCR.loader.dataloader import OCRDataset, ClusterRandomSampler, Collator
 from torch.utils.data import DataLoader
 from torch.optim.lr_scheduler import OneCycleLR
 
-from tool.utils import compute_accuracy
+from tfmOCR.tool.utils import compute_accuracy
 from PIL import Image
 import numpy as np
 import os

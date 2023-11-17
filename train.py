@@ -1,7 +1,7 @@
 import argparse
 
-from model.trainer import Trainer
-from tool.config import Cfg
+from tfmOCR.model.trainer import Trainer
+from tfmOCR.tool.config import Cfg
 
 def main():
     parser = argparse.ArgumentParser()

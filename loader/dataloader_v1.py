@@ -1,7 +1,7 @@
 import torch
 import numpy as np
 from PIL import Image
-from tool.translate import process_image
+from tfmOCR.tool.translate import process_image
 import os
 from collections import defaultdict
 from prefetch_generator import background

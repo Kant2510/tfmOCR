@@ -1,7 +1,7 @@
 from torch import nn
 
-import model.backbone.vgg as vgg
-from model.backbone.resnet import Resnet50
+import tfmOCR.model.backbone.vgg as vgg
+from tfmOCR.model.backbone.resnet import Resnet50
 
 class CNN(nn.Module):
     def __init__(self, backbone, **kwargs):

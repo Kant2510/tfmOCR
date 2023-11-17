@@ -1,5 +1,5 @@
-from tool.translate import build_model, translate, translate_beam_search, process_input
-from tool.utils import download_weights
+from tfmOCR.tool.translate import build_model, translate, translate_beam_search, process_input
+from tfmOCR.tool.utils import download_weights
 
 import torch
 from collections import defaultdict

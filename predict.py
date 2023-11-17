@@ -1,8 +1,8 @@
 import argparse
 from PIL import Image
 
-from tool.predictor import Predictor
-from tool.config import Cfg
+from tfmOCR.tool.predictor import Predictor
+from tfmOCR.tool.config import Cfg
 
 def main():
     parser = argparse.ArgumentParser()

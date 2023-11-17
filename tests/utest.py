@@ -1,11 +1,10 @@
-# from nhatocr.loader.dataloader_v1 import DataGen
-from loader.dataloader_v1 import DataGen  
-from model.vocab import Vocab
+from tfmOCR.loader.dataloader_v1 import DataGen  
+from tfmOCR.model.vocab import Vocab
 def test_loader():
     chars = 'aAàÀảẢãÃáÁạẠăĂằẰẳẲẵẴắẮặẶâÂầẦẩẨẫẪấẤậẬbBcCdDđĐeEèÈẻẺẽẼéÉẹẸêÊềỀểỂễỄếẾệỆfFgGhHiIìÌỉỈĩĨíÍịỊjJkKlLmMnNoOòÒỏỎõÕóÓọỌôÔồỒổỔỗỖốỐộỘơƠờỜởỞỡỠớỚợỢpPqQrRsStTuUùÙủỦũŨúÚụỤưƯừỪửỬữỮứỨựỰvVwWxXyYỳỲỷỶỹỸýÝỵỴzZ0123456789!"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~ '
 
     vocab = Vocab(chars)
-    s_gen = DataGen('tests/', 'sample.txt', vocab, 'cpu', 32, 512)
+    s_gen = DataGen('tfmOCR/tests/', 'sample.txt', vocab, 'cpu', 32, 512)
 
     iterator = s_gen.gen(30)
     for batch in iterator:

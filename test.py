@@ -41,14 +41,17 @@ config = Cfg.load_config_from_file('defaults.yml')
 model = VietOCR('resnet50', config['cnn'])#, input_channel=3, output_channel=256, pretrained=True)
 # transformer = LanguageTransformer(vocab_size, **transformer_args)
 
-# summary(model, (3, 32, 100))
-# import torch
-# t = torch.randn(32, 256, 26, 2)
-# print(t.shape)
-# t = t.flatten(2)
-# print(t.shape)
-# t = t.permute(-1, 0, 1)
-# print(t.shape)
+summary(model, (3, 96, 1600))
+import torch
+t = torch.randn(32, 512, 3, 50)
+print(t.shape)
+t = t.transpose(-1, -2)
+print(t.shape)
+t = t.flatten(2)
+
+print(t.shape)
+t = t.permute(-1, 0, 1)
+print(t.shape)
 # from torch import nn
 # import torch
 # transformer_model = nn.Transformer(nhead=2, num_encoder_layers=12, d_model=6)

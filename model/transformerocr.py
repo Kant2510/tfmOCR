@@ -1,7 +1,5 @@
-from model.backbone.cnn import CNN
-from model.seqmodel.transformer import LanguageTransformer
-from model.seqmodel.seq2seq import Seq2Seq
-from model.seqmodel.convseq2seq import ConvSeq2Seq
+from tfmOCR.model.backbone.cnn import CNN
+from tfmOCR.model.seqmodel.transformer import LanguageTransformer
 from torch import nn
 
 class VietOCR(nn.Module):
