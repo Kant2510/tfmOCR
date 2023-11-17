@@ -21,7 +21,7 @@ cnn:
 vocab: " '/123456789ABCDEFGHIJKLMNOPQRSTUVWXYabcdefghiklmnopqrstuvxyzÁÂÍÓÔÝàáâãèéêìíòóôõùúýăĐđĩũơƯưạẢảẤấầẩẫậắằẳẵặẹẻẽếềểễệỉịọỏốồỔổỗộớờỞởỡợụủỨứừửữựỳỵỷỹ"
 
 # cpu, cuda, cuda:0
-device: cpu #cuda:0
+device: cuda:0
 
 seq_modeling: transformer
 transformer:
@@ -54,7 +54,7 @@ dataset:
     # name of your dataset
     name: data
     # path to annotation and image
-    data_root: ../../datasets/enhanced_dataset
+    data_root: datasets/
     train_annotation: train.txt
     valid_annotation: val.txt
     # resize image to 32 height, larger height will increase accuracy

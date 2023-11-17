@@ -35,7 +35,6 @@ class LanguageTransformer(nn.Module):
         tgt_mask = self.gen_nopeek_mask(tgt.shape[0]).to(src.device)
         
         src = self.pos_enc(src*math.sqrt(self.d_model))
-        print(src.shape)
 #        src = self.learned_pos_enc(src*math.sqrt(self.d_model))
 
         tgt = self.pos_enc(self.embed_tgt(tgt) * math.sqrt(self.d_model))
