@@ -49,7 +49,7 @@ def createDataset(outputPath, root_dir, annotation_path, indexes):
     annotations = [l.strip().split('\t') for l in many_lines]
 
     nSamples = len(annotations)
-    env = lmdb.open(outputPath, map_size=1099511627776)
+    env = lmdb.open(outputPath, map_size=1073741824)
     cache = {}
     cnt = 0
     error = 0

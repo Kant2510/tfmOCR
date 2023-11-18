@@ -1,6 +1,5 @@
 import os
 
-
 class Logger():
     def __init__(self, fname):
         path, _ = os.path.split(fname)

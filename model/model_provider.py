@@ -1,19 +1,16 @@
-from tfmOCR.optim.optim import ScheduledOptim
-from tfmOCR.optim.labelsmoothingloss import LabelSmoothingLoss
-from torch.optim import Adam, AdamW
-from tfmOCR.tool.translate import build_model
-from tfmOCR.tool.translate import translate, batch_translate_beam_search
-from tfmOCR.tool.utils import download_weights
-from tfmOCR.tool.logger import Logger
-from tfmOCR.loader.aug import ImgAugTransform
-
 import torch
-from tfmOCR.loader.dataloader_v1 import DataGen
-from tfmOCR.loader.dataloader import OCRDataset, ClusterRandomSampler, Collator
-from torch.utils.data import DataLoader
+from torch.optim import AdamW
 from torch.optim.lr_scheduler import OneCycleLR
+from torch.utils.data import DataLoader
 
+from tfmOCR.optim.labelsmoothingloss import LabelSmoothingLoss
+from tfmOCR.tool.translate import translate, batch_translate_beam_search
+from tfmOCR.tool.logger import Logger
+from tfmOCR.data_workers.aug import ImgAugTransform
+from tfmOCR.data_workers.dataloader import OCRDataset, ClusterRandomSampler, Collator
 from tfmOCR.tool.utils import compute_accuracy
+from tfmOCR.model.tfm_model import build_model
+
 from PIL import Image
 import numpy as np
 import os
@@ -21,7 +18,7 @@ import matplotlib.pyplot as plt
 import time
 import random
 
-class Trainer():
+class ModelProvider():
     def __init__(self, config, pretrained=False, augmentor=ImgAugTransform()):
 
         self.config = config
@@ -51,8 +48,7 @@ class Trainer():
             self.logger = Logger(logger) 
 
         if pretrained:
-            weight_file = download_weights(config['pretrain'], quiet=config['quiet'])
-            self.load_weights(weight_file)
+            self.load_weights(config['pretrain'])
 
         self.iter = 0
         
@@ -61,25 +57,25 @@ class Trainer():
 
         self.criterion = LabelSmoothingLoss(len(self.vocab), padding_idx=self.vocab.pad, smoothing=0.1)
         
-        transforms = None
+        self.transforms = None
         if self.image_aug:
-            transforms =  augmentor
+            self.transforms = augmentor
+        self.train_losses = []
+    
+    def prepare_dataset(self):
         list_indexes = list(range(0, 10800))
-        if config['dataset']['shuffle']:
+        if self.config['dataset']['shuffle']:
             #shuffle the list
             random.seed(2510)
             random.shuffle(list_indexes)
         #split the list into 80% train and 20% test
-        train_indexes = list_indexes[:int(len(list_indexes)*config['dataset']['split'])]
-        valid_indexes = list_indexes[int(len(list_indexes)*config['dataset']['split']):]
+        train_indexes = list_indexes[:int(len(list_indexes)*self.config['dataset']['split'])]
+        valid_indexes = list_indexes[int(len(list_indexes)*self.config['dataset']['split']):]
 
         self.train_gen = self.data_gen('train_{}'.format(self.dataset_name), 
-                self.data_root, self.annotation, train_indexes, self.masked_language_model, transform=transforms)
-        #if self.valid_annotation:
+                self.data_root, self.annotation, train_indexes, self.masked_language_model, transform=self.transforms)
         self.valid_gen = self.data_gen('valid_{}'.format(self.dataset_name), 
                 self.data_root, self.annotation, valid_indexes, masked_language_model=False)
-
-        self.train_losses = []
         
     def train(self):
         total_loss = 0
@@ -164,7 +160,7 @@ class Trainer():
         actual_sents = []
         img_files = []
 
-        for batch in  self.valid_gen:
+        for batch in self.valid_gen:
             batch = self.batch_to_device(batch)
 
             if self.beamsearch:
@@ -195,7 +191,7 @@ class Trainer():
     
         return acc_full_seq, acc_per_char
     
-    def visualize_prediction(self, sample=16, errorcase=False, fontname='serif', fontsize=16):
+    def visualize_prediction(self, sample=10, errorcase=False, fontname='serif', fontsize=16):
         
         pred_sents, actual_sents, img_files, probs = self.predict(sample)
 
@@ -231,7 +227,7 @@ class Trainer():
 
         plt.show()
     
-    def visualize_dataset(self, sample=16, fontname='serif'):
+    def visualize_dataset(self, sample=10, fontname='serif'):
         n = 0
         for batch in self.train_gen:
             for i in range(self.batch_size):
@@ -324,14 +320,6 @@ class Trainer():
                 **self.config['dataloader'])
        
         return gen
-
-    def data_gen_v1(self, lmdb_path, data_root, annotation):
-        data_gen = DataGen(data_root, annotation, self.vocab, 'cpu', 
-                image_height = self.config['dataset']['image_height'],        
-                image_min_width = self.config['dataset']['image_min_width'],
-                image_max_width = self.config['dataset']['image_max_width'])
-
-        return data_gen
 
     def step(self, batch):
         self.model.train()

@@ -1,11 +1,7 @@
 import torch
 import numpy as np
-import math
-from PIL import Image
 from torch.nn.functional import log_softmax, softmax
 
-from tfmOCR.model.transformerocr import VietOCR
-from tfmOCR.model.vocab import Vocab
 from tfmOCR.model.beam import Beam
 
 def batch_translate_beam_search(img, model, beam_size=4, candidates=1, max_seq_length=128, sos_token=1, eos_token=2):
@@ -115,57 +111,3 @@ def translate(img, model, max_seq_length=128, sos_token=1, eos_token=2):
         char_probs = np.sum(char_probs, axis=-1)/(char_probs>0).sum(-1)
     
     return translated_sentence, char_probs
-
-
-def build_model(config):
-    vocab = Vocab(config['vocab'])
-    device = config['device']
-    print('len vocab: ', len(vocab))
-    model = VietOCR(len(vocab),
-            config['backbone'],
-            config['cnn'], 
-            config['transformer'])#,config['seq_modeling'])
-    
-    model = model.to(device)
-
-    return model, vocab
-
-def resize(w, h, expected_height, image_min_width, image_max_width):
-    new_w = int(expected_height * float(w) / float(h))
-    round_to = 10
-    new_w = math.ceil(new_w/round_to)*round_to
-    new_w = max(new_w, image_min_width)
-    new_w = min(new_w, image_max_width)
-
-    return new_w, expected_height
-
-def process_image(image, image_height, image_min_width, image_max_width):
-    img = image.convert('RGB')
-
-    w, h = img.size
-    new_w, image_height = resize(w, h, image_height, image_min_width, image_max_width)
-
-    img = img.resize((new_w, image_height), Image.LANCZOS)
-
-    img = np.asarray(img).transpose(2,0, 1)
-    img = img/255
-    return img
-
-def process_input(image, image_height, image_min_width, image_max_width):
-    img = process_image(image, image_height, image_min_width, image_max_width)
-    img = img[np.newaxis, ...]
-    img = torch.FloatTensor(img)
-    return img
-
-def predict(filename, config):
-    img = Image.open(filename)
-    img = process_input(img)
-
-    img = img.to(config['device'])
-
-    model, vocab = build_model(config)
-    s = translate(img, model)[0].tolist()
-    s = vocab.decode(s)
-    
-    return s
-

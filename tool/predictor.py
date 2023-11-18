@@ -1,6 +1,8 @@
-from tfmOCR.tool.translate import build_model, translate, translate_beam_search, process_input
-from tfmOCR.tool.utils import download_weights
+from tfmOCR.tool.translate import translate, translate_beam_search
+from tfmOCR.data_workers.processing import process_input
+from tfmOCR.model.tfm_model import build_model
 
+from PIL import Image
 import torch
 from collections import defaultdict
 
@@ -12,10 +14,7 @@ class Predictor():
         model, vocab = build_model(config)
         weights = '/tmp/weights.pth'
 
-        if config['weights'].startswith('http'):
-            weights = download_weights(config['weights'])
-        else:
-            weights = config['weights']
+        weights = config['weights']
 
         model.load_state_dict(torch.load(weights, map_location=torch.device(device)))
 
@@ -83,3 +82,14 @@ class Predictor():
         else: 
             return sents
 
+def predict(filename, config):
+    img = Image.open(filename)
+    img = process_input(img)
+
+    img = img.to(config['device'])
+
+    model, vocab = build_model(config)
+    s = translate(img, model)[0].tolist()
+    s = vocab.decode(s)
+    
+    return s
