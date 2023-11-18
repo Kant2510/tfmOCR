@@ -77,7 +77,7 @@ class Trainer():
                 self.data_root, self.annotation, train_indexes, self.masked_language_model, transform=transforms)
         #if self.valid_annotation:
         self.valid_gen = self.data_gen('valid_{}'.format(self.dataset_name), 
-                self.data_root, self.annotation, valid_indexes, masked_language_model=False, indexes=valid_indexes)
+                self.data_root, self.annotation, valid_indexes, masked_language_model=False)
 
         self.train_losses = []
         
