@@ -19,7 +19,7 @@ from tfmOCR.tool.create_dataset import createDataset
 from tfmOCR.tool.translate import resize
 
 class OCRDataset(Dataset):
-    def __init__(self, lmdb_path, root_dir, annotation_path, vocab, image_height=32, image_min_width=32, image_max_width=512, transform=None):
+    def __init__(self, lmdb_path, root_dir, annotation_path, indexes, vocab, image_height=32, image_min_width=32, image_max_width=512, transform=None):
         self.root_dir = root_dir
         self.annotation_path = os.path.join(root_dir, annotation_path)
         self.vocab = vocab
@@ -35,7 +35,7 @@ class OCRDataset(Dataset):
             print('{} exists. Remove folder if you want to create new dataset'.format(self.lmdb_path))
             sys.stdout.flush()
         else:
-            createDataset(self.lmdb_path, root_dir, annotation_path)
+            createDataset(self.lmdb_path, root_dir, annotation_path, indexes)
         
         self.env = lmdb.open(
             self.lmdb_path,
@@ -62,7 +62,6 @@ class OCRDataset(Dataset):
             bucket = self.get_bucket(i)
             self.cluster_indices[bucket].append(i)
 
-    
     def get_bucket(self, idx):
         key = 'dim-%09d'%idx
 

@@ -19,6 +19,7 @@ import numpy as np
 import os
 import matplotlib.pyplot as plt
 import time
+import random
 
 class Trainer():
     def __init__(self, config, pretrained=False, augmentor=ImgAugTransform()):
@@ -31,8 +32,7 @@ class Trainer():
         self.beamsearch = config['predictor']['beamsearch']
 
         self.data_root = config['dataset']['data_root']
-        self.train_annotation = config['dataset']['train_annotation']
-        self.valid_annotation = config['dataset']['valid_annotation']
+        self.annotation = config['dataset']['annotation']
         self.dataset_name = config['dataset']['name']
 
         self.batch_size = config['trainer']['batch_size']
@@ -64,12 +64,20 @@ class Trainer():
         transforms = None
         if self.image_aug:
             transforms =  augmentor
+        list_indexes = list(range(0, 10800))
+        if config['dataset']['shuffle']:
+            #shuffle the list
+            random.seed(2510)
+            random.shuffle(list_indexes)
+        #split the list into 80% train and 20% test
+        train_indexes = list_indexes[:int(len(list_indexes)*config['dataset']['split'])]
+        valid_indexes = list_indexes[int(len(list_indexes)*config['dataset']['split']):]
 
         self.train_gen = self.data_gen('train_{}'.format(self.dataset_name), 
-                self.data_root, self.train_annotation, self.masked_language_model, transform=transforms)
-        if self.valid_annotation:
-            self.valid_gen = self.data_gen('valid_{}'.format(self.dataset_name), 
-                    self.data_root, self.valid_annotation, masked_language_model=False)
+                self.data_root, self.annotation, self.masked_language_model, transform=transforms, indexes=train_indexes)
+        #if self.valid_annotation:
+        self.valid_gen = self.data_gen('valid_{}'.format(self.dataset_name), 
+                self.data_root, self.annotation, masked_language_model=False, indexes=valid_indexes)
 
         self.train_losses = []
         
@@ -294,13 +302,14 @@ class Trainer():
 
         return batch
 
-    def data_gen(self, lmdb_path, data_root, annotation, masked_language_model=True, transform=None):
+    def data_gen(self, lmdb_path, data_root, annotation, indexes, masked_language_model=True, transform=None):
         dataset = OCRDataset(lmdb_path=lmdb_path, 
                 root_dir=data_root, annotation_path=annotation, 
                 vocab=self.vocab, transform=transform, 
                 image_height=self.config['dataset']['image_height'], 
                 image_min_width=self.config['dataset']['image_min_width'], 
-                image_max_width=self.config['dataset']['image_max_width'])
+                image_max_width=self.config['dataset']['image_max_width'],
+                indexes=indexes)
 
         sampler = ClusterRandomSampler(dataset, self.batch_size, True)
         collate_fn = Collator(masked_language_model)
