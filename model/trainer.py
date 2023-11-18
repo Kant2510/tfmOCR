@@ -74,10 +74,10 @@ class Trainer():
         valid_indexes = list_indexes[int(len(list_indexes)*config['dataset']['split']):]
 
         self.train_gen = self.data_gen('train_{}'.format(self.dataset_name), 
-                self.data_root, self.annotation, self.masked_language_model, transform=transforms, indexes=train_indexes)
+                self.data_root, self.annotation, train_indexes, self.masked_language_model, transform=transforms)
         #if self.valid_annotation:
         self.valid_gen = self.data_gen('valid_{}'.format(self.dataset_name), 
-                self.data_root, self.annotation, masked_language_model=False, indexes=valid_indexes)
+                self.data_root, self.annotation, valid_indexes, masked_language_model=False, indexes=valid_indexes)
 
         self.train_losses = []
         
@@ -304,12 +304,12 @@ class Trainer():
 
     def data_gen(self, lmdb_path, data_root, annotation, indexes, masked_language_model=True, transform=None):
         dataset = OCRDataset(lmdb_path=lmdb_path, 
-                root_dir=data_root, annotation_path=annotation, 
+                root_dir=data_root, annotation_path=annotation, indexes=indexes,
                 vocab=self.vocab, transform=transform, 
                 image_height=self.config['dataset']['image_height'], 
                 image_min_width=self.config['dataset']['image_min_width'], 
                 image_max_width=self.config['dataset']['image_max_width'],
-                indexes=indexes)
+                )
 
         sampler = ClusterRandomSampler(dataset, self.batch_size, True)
         collate_fn = Collator(masked_language_model)
