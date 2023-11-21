@@ -1,8 +1,8 @@
 # for training
-pretrain: https://vocr.vn/data/vietocr/vgg_transformer.pth
+pretrain:
 
 # url or local path (predict)
-weights: https://vocr.vn/data/vietocr/vgg_transformer.pth
+weights:
 
 backbone: vgg19_bn
 cnn:
@@ -23,6 +23,7 @@ cnn:
         - [1, 1]
     # dim of ouput feature map
     hidden: 256
+    weights:
 
 # change to list chars of your dataset or use default vietnamese chars
 vocab: 'aAàÀảẢãÃáÁạẠăĂằẰẳẲẵẴắẮặẶâÂầẦẩẨẫẪấẤậẬbBcCdDđĐeEèÈẻẺẽẼéÉẹẸêÊềỀểỂễỄếẾệỆfFgGhHiIìÌỉỈĩĨíÍịỊjJkKlLmMnNoOòÒỏỎõÕóÓọỌôÔồỒổỔỗỖốỐộỘơƠờỜởỞỡỠớỚợỢpPqQrRsStTuUùÙủỦũŨúÚụỤưƯừỪửỬữỮứỨựỰvVwWxXyYỳỲỷỶỹỸýÝỵỴzZ0123456789!"#$%&''()*+,-./:;<=>?@[\]^_`{|}~ '
@@ -81,5 +82,3 @@ aug:
 predictor:
     # disable or enable beamsearch while prediction, use beamsearch will be slower
     beamsearch: False
-
-quiet: False

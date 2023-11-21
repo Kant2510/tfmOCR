@@ -3,14 +3,15 @@ from torch import nn
 from torchvision import models
 
 class Vgg(nn.Module):
-    def __init__(self, name, ss, ks, hidden, pretrained=True, dropout=0.5):
+    def __init__(self, name, ss, ks, hidden, weights_path, pretrained=True, dropout=0.5):
         super(Vgg, self).__init__()
 
         if name == 'vgg11_bn':
-            cnn = models.vgg11_bn(pretrained=pretrained)
+            cnn = models.vgg11_bn(pretrained=False)
+            cnn.load_state_dict(torch.load(weights_path))   
         elif name == 'vgg19_bn':
-            cnn = models.vgg19_bn(pretrained=pretrained)
-
+            cnn = models.vgg19_bn(pretrained=False)
+            cnn.load_state_dict(torch.load(weights_path))
         pool_idx = 0
         
         for i, layer in enumerate(cnn.features):
@@ -39,9 +40,9 @@ class Vgg(nn.Module):
         conv = conv.permute(-1, 0, 1)
         return conv
 
-def vgg11_bn(ss, ks, hidden, pretrained=True, dropout=0.5):
-    return Vgg('vgg11_bn', ss, ks, hidden, pretrained, dropout)
+def vgg11_bn(ss, ks, hidden, weights, pretrained=True, dropout=0.5):
+    return Vgg('vgg11_bn', ss, ks, hidden, weights, pretrained, dropout)
 
-def vgg19_bn(ss, ks, hidden, pretrained=True, dropout=0.5):
-    return Vgg('vgg19_bn', ss, ks, hidden, pretrained, dropout)
+def vgg19_bn(ss, ks, hidden, weights, pretrained=True, dropout=0.5):
+    return Vgg('vgg19_bn', ss, ks, hidden, weights, pretrained, dropout)
    

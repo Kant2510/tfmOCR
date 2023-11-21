@@ -1,4 +1,0 @@
-einops==0.2.0
-prefetch_generator
-imgaug
-lmdb
